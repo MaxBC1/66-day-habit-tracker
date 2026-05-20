@@ -6,7 +6,7 @@
   "display": "standalone",
   "background_color": "#0b1220",
   "theme_color": "#16a34a",
-  "description": "A 66-day habit tracker for fitness, nutrition, mobility and a VLAN work project.",
+  "description": "A 66-day habit tracker for fitness, nutrition, mobility, editable workouts and a VLAN work project.",
   "icons": [
     {
       "src": "icons/icon-192.png",

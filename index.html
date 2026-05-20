@@ -45,7 +45,7 @@
       <div class="logo">✓</div>
       <div>
         <h1>66-Day Habit Tracker</h1>
-        <div class="sub">Fitness, nutrition, mobility and VLAN project tracker built around consistency.</div>
+        <div class="sub">Fitness, nutrition, workouts, running and Project Work tracker built around consistency.</div>
       </div>
     </div>
   </header>
@@ -80,12 +80,12 @@
 
     <div class="card" id="workoutCard">
       <div class="row between wrap">
-        <h2>Today's Main Workout</h2>
-        <span class="pill blue" id="workoutTypePill">Strength A</span>
+        <h2>Today's Main Exercise</h2>
+        <span class="pill blue" id="workoutTypePill">Workout A</span>
       </div>
       <div id="todayWorkoutDetail"></div>
       <div class="row wrap" style="margin-top:12px">
-        <button class="btn primary" id="markWorkoutDone">Mark workout done</button>
+        <button class="btn primary" id="markWorkoutDone">Mark morning exercise done</button>
         <button class="btn ghost" id="editTodayWorkout">Edit today</button>
         <button class="btn ghost" id="copyToLibrary">Edit template</button>
       </div>
@@ -94,13 +94,21 @@
     <div class="card">
       <div class="row between">
         <h2>Today's Checklist</h2>
-        <span class="pill" id="dayTypePill">Strength A</span>
+        <span class="pill" id="dayTypePill">Workout A</span>
       </div>
       <div id="taskList"></div>
       <div class="row wrap" style="margin-top:12px">
         <button class="btn primary" id="markCore">Mark minimum done</button>
         <button class="btn ghost" id="clearToday">Clear today</button>
       </div>
+    </div>
+
+    <div class="card" id="projectWorkCard">
+      <div class="row between wrap">
+        <h2>Project Work</h2>
+        <span class="pill purple">Suggested, not a checklist</span>
+      </div>
+      <div id="projectSuggestion"></div>
     </div>
 
     <div class="card flat">
@@ -121,6 +129,14 @@
       <p class="muted">Tap a day to open its checklist and workout details. Green means the minimum movement task is complete.</p>
       <div class="daygrid" id="dayGrid"></div>
     </div>
+    <div class="card">
+      <div class="row between wrap">
+        <h2>Project Work Schedule</h2>
+        <span class="pill purple">2 × 25 min suggested</span>
+      </div>
+      <div id="weekProjectSuggestion"></div>
+    </div>
+
     <div class="card">
       <h2 id="selectedDayTitle">Selected Day</h2>
       <div class="muted" id="selectedDaySummary"></div>
@@ -174,17 +190,17 @@
       <h2>Overarching Themes</h2>
       <ul class="list">
         <li>Consistency beats intensity.</li>
-        <li>Three anchor sessions keep the week alive.</li>
-        <li>Two light days protect recovery and momentum.</li>
+        <li>Five planned movement days keep the week alive: 3 workouts, 2 runs, 2 flexible/light days.</li>
+        <li>Flexible/light days protect recovery, social life and momentum.</li>
         <li>No zero days: a five-minute minimum still counts.</li>
         <li>Food should be no-cook, lower-cost and protein-forward.</li>
-        <li>The VLAN project moves through 2 × 25-minute blocks per week.</li>
+        <li>Project Work moves through 2 × 25-minute suggested blocks per week.</li>
       </ul>
     </div>
     <div class="accordion">
-      <details open><summary>Phase 1 — Days 1-21: Install</summary><p>Make the routine easy enough to repeat. Keep training at 6/10, protect calves and shins, start water/protein habits, and create the VLAN project document.</p></details>
-      <details><summary>Phase 2 — Days 22-44: Build</summary><p>Add progress without breaking consistency. Runs become longer, kettlebell sessions get stronger, pull-up volume increases, and the VLAN design takes shape.</p></details>
-      <details><summary>Phase 3 — Days 45-66: Automate</summary><p>Make the routine feel normal. Keep the three anchors alive, protect sleep twice weekly, and make the VLAN proposal presentable.</p></details>
+      <details open><summary>Phase 1 — Days 1-21: Install</summary><p>Make the routine easy enough to repeat. Keep training at 6/10, protect calves and shins, start water/light meal habits, and create the Project Work document.</p></details>
+      <details><summary>Phase 2 — Days 22-44: Build</summary><p>Add progress without breaking consistency. Runs become longer, kettlebell sessions get stronger, pull-up volume increases, and the Project Work design takes shape.</p></details>
+      <details><summary>Phase 3 — Days 45-66: Automate</summary><p>Make the routine feel normal. Keep the workout/run rhythm alive, protect sleep, and make the Project Work output presentable.</p></details>
     </div>
   </section>
 
@@ -219,8 +235,8 @@
 <div class="modal" id="workoutModal">
   <div class="sheet">
     <button class="close" id="closeWorkoutModal">×</button>
-    <h2 id="editorTitle">Edit Workout</h2>
-    <div class="field"><label>Workout name</label><input id="editName" type="text"></div>
+    <h2 id="editorTitle">Edit Exercise</h2>
+    <div class="field"><label>Exercise name</label><input id="editName" type="text"></div>
     <div class="field"><label>Main goal / intent</label><input id="editGoal" type="text" placeholder="Example: Squat, push, pull, grip"></div>
     <div class="field"><label>Clear detail / workout type</label><input id="editDetail" type="text" placeholder="Example: 35-45 min strength session"></div>
     <div class="field"><label>Green version — full session, one line per movement</label><textarea id="editGreen"></textarea></div>
@@ -241,11 +257,10 @@ const STORAGE_KEY = 'habit66_tracker_v1';
 const dayMs = 86400000;
 
 const baseTasks = [
-  {id:'water', title:'Water before coffee', note:'Keep morning fuel simple: water first, coffee later.'},
-  {id:'protein', title:'Protein + fruit at work', note:'Protein shake/yoghurt + fruit by 9:30am on workout days.'},
-  {id:'lunch', title:'Better lunch choice', note:'Aim cheaper/protein-forward. Avoid fish options; prawn/chicken/beef/tofu/egg are fine.'},
-  {id:'dinner', title:'Easy protein dinner', note:'Microwave meal is fine. Add veg/yoghurt/fruit/protein if needed.'},
-  {id:'sweet', title:'Sweets deliberate, not automatic', note:'Protein first, delay 10 minutes, then choose deliberately.'}
+  {id:'water', title:'Water', note:'Drink water before coffee. Keep morning fuel simple.'},
+  {id:'lightMeal', title:'Light Meal', note:'After training or once at work: protein shake, yoghurt, fruit, or another light option.'},
+  {id:'lunch', title:'Lunch', note:'The app will suggest cheaper/better or flexible based on your week.'},
+  {id:'dinner', title:'Dinner', note:'Microwave meal is fine. Add no-cook veg, yoghurt, fruit or protein if needed.'}
 ];
 
 const phases = [
@@ -255,43 +270,13 @@ const phases = [
 ];
 
 const schedule = [
-  {name:'Monday', type:'Strength A', focus:'Squat, push, pull, core, grip', tasks:[
-    {id:'movement', title:'Strength A or 5-min minimum', note:'Goblet squat, push-ups, row, RDL, plank, suitcase carry.'},
-    {id:'pullup', title:'Pull-up micro practice', note:'Dead hang, scapular pulls, negatives or clean singles.'},
-    {id:'mobility', title:'5-10 min mobility', note:'Hips, shoulders, calves.'}
-  ]},
-  {name:'Tuesday', type:'Light + VLAN', focus:'Mobility, pull-ups, project', tasks:[
-    {id:'movement', title:'Light movement minimum', note:'Mobility, walk, or 5-minute Red Day protocol.'},
-    {id:'pullup', title:'Pull-up micro practice', note:'3-5 minutes only.'},
-    {id:'mobility', title:'12-18 min mobility flow', note:'Hips, shoulders, calves, dead hang.'},
-    {id:'project', title:'VLAN project: 25 minutes', note:'One output only. Finish by writing the next action.'},
-    {id:'sleep', title:'Protected sleep night', note:'Pack clothes, reduce scrolling, decide tomorrow’s session.'}
-  ]},
-  {name:'Wednesday', type:'Run', focus:'Cardio and running durability', tasks:[
-    {id:'movement', title:'Run session or walk/jog minimum', note:'Keep most running easy. Pain changes the plan.'},
-    {id:'calves', title:'Calf/shin protection', note:'Calf raises, bent-knee raises, tibialis raises, calf stretch.'},
-    {id:'mobility', title:'Cooldown mobility', note:'Calves, hips, hamstrings.'}
-  ]},
-  {name:'Thursday', type:'Light + VLAN', focus:'Recovery, aerobic base, project', tasks:[
-    {id:'movement', title:'Easy aerobic or mobility', note:'Walk, golf, easy jog, skip carefully, or mobility.'},
-    {id:'pullup', title:'Pull-up micro practice', note:'Dead hang and scapular pulls count.'},
-    {id:'project', title:'VLAN project: 25 minutes', note:'One output only. Finish with next action.'},
-    {id:'sleep', title:'Protected sleep option', note:'Use this if Sunday/Tuesday sleep drifted.'}
-  ]},
-  {name:'Friday', type:'Strength B', focus:'Hinge, legs, press, grip', tasks:[
-    {id:'movement', title:'Strength B or 5-min minimum', note:'Swings, lunges, press, deadlift, core, farmer carry.'},
-    {id:'pullup', title:'Pull-up micro practice', note:'Keep reps clean, never grind ugly reps.'},
-    {id:'mobility', title:'5-10 min mobility', note:'Hips, shoulders, calves.'}
-  ]},
-  {name:'Saturday', type:'Flexible', focus:'Social life and optional movement', tasks:[
-    {id:'movement', title:'Weekend movement minimum', note:'Walk, golf, easy run, mobility, or Red Day protocol.'},
-    {id:'social', title:'Social/partner time without guilt', note:'The plan has to survive real life.'}
-  ]},
-  {name:'Sunday', type:'Reset', focus:'Recover and plan the week', tasks:[
-    {id:'movement', title:'Reset walk or mobility', note:'20-minute walk or longer mobility session.'},
-    {id:'review', title:'Weekly reset', note:'Check anchors, choose next workouts, plan lunch defaults.'},
-    {id:'sleep', title:'Protected sleep night', note:'Set up Monday morning.'}
-  ]}
+  {name:'Day 1', type:'Workout A', focus:'Squat, push, pull, core, grip'},
+  {name:'Day 2', type:'Run', focus:'Easy run / aerobic base'},
+  {name:'Day 3', type:'Workout B', focus:'Hinge, legs, press, carry'},
+  {name:'Day 4', type:'Run', focus:'Weekly run progression / quality'},
+  {name:'Day 5', type:'Workout C', focus:'Full-body strength, pull-ups, posture'},
+  {name:'Day 6', type:'Flexible/Light', focus:'Walk, golf, mobility, recovery, or bad-day minimum'},
+  {name:'Day 7', type:'Flexible/Light', focus:'Recovery, reset, mobility, or optional easy movement'}
 ];
 
 const runPlan = [
@@ -307,99 +292,128 @@ const runPlan = [
   {type:'Reset/test week', goal:'Easy movement only, then optional confidence test.', detail:'Easy movement only, then optional 5km comfortable test'}
 ];
 
+const easyRunPlan = [
+  '15-20 min easy jog/walk. Keep it conversational and pain-free.',
+  '20-25 min easy jog/walk. Short stride, no speed work.',
+  '25 min easy jog/walk. Add walking breaks before calves/shins complain.',
+  '25-30 min easy jog. Finish feeling like you could do more.',
+  '30 min easy jog/walk. Keep this as the slow run of the week.',
+  '30-35 min easy jog/walk. Smooth, relaxed and controlled.',
+  '35 min easy run or walk/jog. Conversational effort only.',
+  '35-40 min easy run. No racing this one.',
+  '40 min easy run/walk. Keep it comfortable.',
+  '20-30 min easy reset movement only.'
+];
+
 const defaultWorkoutLibrary = {
-  'Strength A': {
-    title:'Strength A', category:'Strength', goal:'Squat, push, pull, core and grip strength.', detail:'Full body strength — 35-45 minutes.',
+  'Workout A': {
+    title:'Workout A — Squat / Push / Pull', category:'Workout', goal:'Build functional strength through squat, push, pull, core and grip work.', detail:'Full-body strength — 35-45 minutes.',
     green:[
-      'Warm-up: 5-7 min hips, ankles, glutes, hang and squats',
-      'Pull-up practice: 5 min dead hang, scap pulls, negatives/singles',
+      'Warm-up: 5-7 min hips, ankles, glutes, dead hang and bodyweight squats',
+      'Pull-up practice: 5 min dead hang, scapular pulls, negatives or clean singles',
       'Goblet squat: 3 × 8-12 with 20kg',
       'Push-ups: 3 × 8-15, stop 1-2 reps before form breaks',
       'One-arm kettlebell row: 3 × 8-12 each side, 15kg or 20kg',
       'Kettlebell Romanian deadlift: 3 × 10-12, use 2 × 20kg if comfortable',
       'Plank or dead bug: 2-3 sets',
-      'Suitcase carry: 3 × 30-60 sec each side with 20kg'
+      'Suitcase carry: 3 × 30-60 sec each side with 20kg',
+      'Light stretch: 3-5 min calves, hip flexors, shoulders and hamstrings'
     ],
     amber:[
       '3 rounds: goblet squat × 10',
       'Push-ups × 10',
       'One-arm row × 10 each side',
       'Plank × 30 sec',
-      'Suitcase carry × 30 sec each side'
+      'Suitcase carry × 30 sec each side',
+      'Light stretch: 2 min hips and calves'
     ],
     red:[
       'Dead hang × 1',
       'Push-ups × 10',
       'Bodyweight squats × 20',
       'Plank × 30 sec',
-      'Hip flexor stretch × 30 sec each side'
+      'Light stretch: hip flexor stretch × 30 sec each side'
     ],
-    notes:'Do not train to failure. Leave clean reps in the tank.'
+    notes:'Do not train to failure. Leave clean reps in the tank and finish with light stretching.'
   },
-  'Strength B': {
-    title:'Strength B', category:'Strength', goal:'Hinge power, single-leg strength, pressing, core and grip.', detail:'Kettlebell strength — 35-45 minutes.',
+  'Workout B': {
+    title:'Workout B — Hinge / Legs / Press', category:'Workout', goal:'Build hinge power, single-leg strength, pressing strength, core and grip.', detail:'Kettlebell strength — 35-45 minutes.',
     green:[
-      'Warm-up: 5-7 min hips, ankles, glutes, hang and squats',
-      'Pull-up practice: 5 min dead hang, scap pulls, negatives/singles',
+      'Warm-up: 5-7 min hips, ankles, glutes, dead hang and squats',
+      'Pull-up practice: 5 min dead hang, scapular pulls, negatives or singles',
       'Kettlebell swings: 5-8 × 10 with 20kg, 45-60 sec rest',
       'Reverse lunge or split squat: 3 × 8 each side, bodyweight/10kg/15kg',
       'One-arm kettlebell press: 3 × 5-8 each side, 10kg or 15kg',
       'Double kettlebell deadlift: 3 × 8-10 with 2 × 20kg',
       'Hollow hold or dead bug: 2-3 sets',
-      'Farmer carry: 3 × 30-60 sec with 2 × 20kg'
+      'Farmer carry: 3 × 30-60 sec with 2 × 20kg',
+      'Light stretch: 3-5 min calves, hip flexors, shoulders and hamstrings'
     ],
     amber:[
       '4 rounds: kettlebell swings × 10',
       'Reverse lunges × 8 each side',
       'Kettlebell press × 6 each side',
       'Dead bug × 8 each side',
-      'Finish with one farmer carry'
+      'Finish with one farmer carry',
+      'Light stretch: 2 min hips and shoulders'
     ],
     red:[
       'Kettlebell swings × 10',
       'Push-ups × 10',
       'Reverse lunges × 10 each side',
       'Dead hang × 1',
-      'Easy stretching × 1 min'
+      'Light stretch: 1-2 min easy stretching'
     ],
-    notes:'Keep swings crisp. Stop if your back or knees feel off.'
+    notes:'Keep swings crisp. Stop if your back or knees feel off. Stretch lightly after.'
+  },
+  'Workout C': {
+    title:'Workout C — Full Body / Pull-up Focus', category:'Workout', goal:'Add a third weekly strength touchpoint without overcooking recovery.', detail:'Full-body strength + posture — 30-40 minutes.',
+    green:[
+      'Warm-up: 5-7 min hips, shoulders, ankles and easy hangs',
+      'Pull-up practice: 5-8 min clean singles/negatives, never to failure',
+      'Double kettlebell front squat or goblet squat: 3 × 6-10',
+      'Kettlebell floor press or push-ups: 3 × 8-12',
+      'One-arm kettlebell row: 3 × 8-12 each side',
+      'Kettlebell swings: 4 × 10 smooth reps',
+      'Dead bug or side plank: 2-3 sets',
+      'Farmer carry or suitcase carry: 3 × 30-45 sec',
+      'Light stretch: 3-5 min hips, calves, chest and shoulders'
+    ],
+    amber:[
+      '3 rounds: pull-up hang/scap pulls × 20 sec/5 reps',
+      'Goblet squat × 10',
+      'Push-ups × 10',
+      'One-arm row × 10 each side',
+      'Dead bug × 8 each side',
+      'Light stretch: 2 min hips and shoulders'
+    ],
+    red:[
+      'Dead hang × 1',
+      'Bodyweight squats × 15',
+      'Push-ups × 8',
+      'Calf raises × 15',
+      'Light stretch: 1 min hip flexors or shoulders'
+    ],
+    notes:'This is the extra workout day. Keep it smooth and leave energy for the weekend.'
   },
   'Run': {
-    title:'Run Day', category:'Cardio', goal:'Build pain-free cardio, speed and endurance for the 14km fun run.', detail:'Run details change by week.',
-    green:['Dynamic warm-up: 5-7 min', 'Follow this week’s run plan', 'Cooldown walk: 5 min', 'Calf/shin protection routine'],
+    title:'Run Day', category:'Cardio', goal:'Build pain-free cardio, speed and endurance for the 14km fun run.', detail:'Run details change by week and by run type.',
+    green:['Dynamic warm-up: 5-7 min', 'Follow this day’s run detail', 'Cooldown walk: 5 min', 'Calf/shin protection routine'],
     amber:['20 min easy walk/jog', 'Keep effort conversational', 'Calf raises + tibialis raises', 'Stretch calves/hips'],
     red:['10 min easy walk', 'Tibialis raises × 15', 'Calf raises × 15', 'Couch stretch 1 min each side'],
     notes:'Pain over 3/10 or pain next morning means reduce the next run.'
   },
-  'Light + VLAN': {
-    title:'Light + VLAN', category:'Recovery + Project', goal:'Keep momentum without adding much fatigue.', detail:'Mobility, pull-up habit and 25-minute VLAN block.',
+  'Flexible/Light': {
+    title:'Flexible / Light Day', category:'Flexible/Light', goal:'Keep the habit alive while protecting recovery and your social life.', detail:'Walk, golf, mobility, easy recovery movement or the bad-day minimum.',
     green:[
-      'Dead hang: 20-30 sec',
-      '90/90 hip switches: 10 total',
-      'Couch stretch: 1 min each side',
-      'Deep squat pry: 1 min',
-      'World’s greatest stretch: 5 each side',
-      'Thread the needle: 8 each side',
-      'Doorway pec stretch: 1 min each side',
-      'VLAN block: 25 min, one output only'
+      '20-45 min walk, golf, easy jog or mobility',
+      'Optional pull-up micro practice: dead hang + scapular pulls',
+      'Mobility: hips, calves, shoulders and chest',
+      'One decent food choice'
     ],
-    amber:['10 min mobility flow', '1 dead hang', 'VLAN block: 10-15 min or write next action'],
-    red:['1 dead hang', 'Hip flexor stretch 1 min each side', 'Write the next VLAN action only'],
-    notes:'This day should leave you feeling better than when you started.'
-  },
-  'Flexible': {
-    title:'Flexible Weekend', category:'Flexible', goal:'Protect social life while keeping the habit alive.', detail:'Any movement counts — golf, walk, mobility or easy run.',
-    green:['20-45 min walk, golf, easy jog or mobility', 'Optional pull-up micro practice', 'One decent food choice'],
-    amber:['10-20 min walk or mobility', 'Water before coffee', 'Protein or fruit choice'],
+    amber:['10-20 min walk or mobility', 'Water before coffee', 'Light meal or fruit choice'],
     red:['5 min movement minimum', 'Do not reset the program', 'Enjoy social/partner time without guilt'],
-    notes:'Weekends are allowed to be flexible. One small win is enough.'
-  },
-  'Reset': {
-    title:'Sunday Reset', category:'Recovery', goal:'Recover, plan the week and protect Monday.', detail:'Reset walk/mobility and weekly planning.',
-    green:['20-30 min walk or mobility', 'Review 3 anchors from last week', 'Choose next week’s workout mornings', 'Plan 3 cheaper lunch defaults', 'Protected sleep setup'],
-    amber:['10 min walk or mobility', 'Pick Monday workout', 'Pack workout clothes'],
-    red:['Write tomorrow’s first action', 'Water bottle ready', 'Phone away 10 min earlier'],
-    notes:'Sunday is not for guilt. It is for making Monday easier.'
+    notes:'Weekends are flexible. One small win is enough.'
   }
 };
 
@@ -433,7 +447,15 @@ function weekForDay(day){return Math.ceil(day/7)}
 function dowForDay(day){return (dateForDay(day).getDay()+6)%7} // Monday=0
 function scheduleForDay(day){return schedule[dowForDay(day)]}
 function workoutKeyForDay(day){return scheduleForDay(day).type}
-function runForDay(day){return runPlan[Math.min(weekForDay(day)-1, runPlan.length-1)]}
+function runForDay(day){
+  const weekIndex=Math.min(weekForDay(day)-1, runPlan.length-1);
+  const dow=dowForDay(day);
+  if(dow===1){
+    return {type:'Easy Base Run', goal:'Slow jog/walk. Build aerobic base and protect shins/calves.', detail:easyRunPlan[Math.min(weekIndex,easyRunPlan.length-1)]};
+  }
+  const rp=runPlan[weekIndex];
+  return {type:rp.type, goal:rp.goal, detail:rp.detail};
+}
 function escapeHtml(str){return String(str||'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
 function linesFromText(txt){return String(txt||'').split('\n').map(s=>s.trim()).filter(Boolean)}
 function linesToText(lines){return (lines||[]).join('\n')}
@@ -443,10 +465,11 @@ function getWorkoutForDay(day){
   let w=deepCopy(state.dayWorkouts[day] || workoutTemplate(type));
   if(type==='Run' && !state.dayWorkouts[day]){
     const rp=runForDay(day);
-    w.title='Run Day: '+rp.type;
+    w.title='Run Day — '+rp.type;
+    w.category='Run';
     w.goal=rp.goal;
     w.detail=rp.detail;
-    w.green=['Dynamic warm-up: 5-7 min', rp.detail, 'Effort: controlled, finish feeling like you could do more', 'Cooldown walk: 5 min', 'Calf/shin protection routine'];
+    w.green=['Dynamic warm-up: 5-7 min', rp.detail, 'Effort: controlled; finish feeling like you could do more', 'Cooldown walk: 5 min', 'Calf/shin protection routine: calf raises, tibialis raises, calf stretch'];
   }
   w._type=type;
   w._custom=!!state.dayWorkouts[day];
@@ -459,14 +482,35 @@ function isChecked(day,id){return !!(state.days[day] && state.days[day].tasks &&
 function setChecked(day,id,val){dayState(day).tasks[id]=val; save();}
 function dayTouched(day){return state.days[day] && Object.values(state.days[day].tasks||{}).some(Boolean)}
 function dayMinimumDone(day){return isChecked(day,'movement')}
-function tasksForDay(day){
-  const item = scheduleForDay(day);
-  let tasks = [...item.tasks, ...baseTasks];
-  if(item.type==='Run'){
+function weeklyLunchCount(day){
+  const start=(weekForDay(day)-1)*7+1;
+  const end=Math.min(start+6,TOTAL_DAYS);
+  let c=0;
+  for(let d=start; d<=end; d++) if(isChecked(d,'lunch')) c++;
+  return c;
+}
+function morningExerciseNote(day){
+  const type=workoutKeyForDay(day);
+  if(type==='Run'){
     const rp=runForDay(day);
-    tasks.unshift({id:'runplan', title:'Run: '+rp.type, note:rp.detail});
+    return rp.type+': '+rp.detail;
   }
-  return tasks;
+  if(type.startsWith('Workout')) return type+': follow Today’s Main Exercise. Green/Amber/Red all count.';
+  return 'Flexible/Light: walk, golf, mobility, easy movement, or the 5-minute bad-day minimum.';
+}
+function lunchNoteForDay(day){
+  const c=weeklyLunchCount(day);
+  if(c>=3) return 'You have 3+ good lunch choices this week — a nicer option is allowed. Keep it protein-forward and avoid fish options.';
+  return `Cheaper/better option suggested today (${c}/3 good lunches this week). Try office/supermarket lunch; chicken, beef, tofu, prawn or egg are good.`;
+}
+function tasksForDay(day){
+  return [
+    {id:'movement', title:'Morning Exercise', note:morningExerciseNote(day)},
+    {id:'water', title:'Water', note:'Drink water before coffee. Keep the morning simple.'},
+    {id:'lightMeal', title:'Light Meal', note:'At work or after training: protein shake, yoghurt, fruit, or another light option.'},
+    {id:'lunch', title:'Lunch', note:lunchNoteForDay(day)},
+    {id:'dinner', title:'Dinner', note:'Microwave meal is fine. Add no-cook veg, yoghurt, fruit or protein if needed.'}
+  ];
 }
 function pctForDay(day){const tasks=tasksForDay(day); if(!tasks.length)return 0; const done=tasks.filter(t=>isChecked(day,t.id)).length; return done/tasks.length;}
 function totalStats(){
@@ -519,6 +563,20 @@ function renderTasks(container,day){
     container.appendChild(div);
   });
 }
+
+function projectSuggestionForDay(day){
+  const dow=dowForDay(day);
+  if(dow===0) return {title:'Schedule Project Work this week', body:'Suggested blocks: Tuesday and Thursday, 25 minutes each. Pick two nights that fit and write the next action in Notes.'};
+  if(dow===1 || dow===3) return {title:'Suggested Project Work tonight', body:'25 minutes only: choose one output, work on it, then write the next action. Move it to a flexible day if tonight is cooked.'};
+  if(dow===5 || dow===6) return {title:'Project Work backup window', body:'Use this only if weekday blocks were missed. One 25-minute block is enough; do not turn it into a guilt session.'};
+  return {title:'Project Work reminder', body:'Default cadence is 2 × 25-minute blocks this week. Tuesday/Thursday are suggested; shift them around your real week.'};
+}
+function renderProjectSuggestion(day){
+  const s=projectSuggestionForDay(day);
+  const html=`<div class="mini-card"><div class="library-title">${escapeHtml(s.title)}</div><div class="library-sub" style="margin-top:6px">${escapeHtml(s.body)}</div></div>`;
+  const home=document.getElementById('projectSuggestion'); if(home) home.innerHTML=html;
+  const week=document.getElementById('weekProjectSuggestion'); if(week) week.innerHTML=`<p class="muted">Project Work is no longer a daily checklist item. It is a suggested weekly task so it does not become another guilt checkbox.</p>${html}<ul class="list"><li>Default: Tuesday + Thursday, 25 minutes.</li><li>Backup: one flexible/light day if a weekday gets derailed.</li><li>Rule: one output only, then write the next action.</li></ul>`;
+}
 function render(){
   const cur=getCurrentDay(); selectedDay = clamp(selectedDay || cur,1,TOTAL_DAYS);
   const phase=phaseForDay(cur); const sched=scheduleForDay(cur); const stats=totalStats();
@@ -537,6 +595,7 @@ function render(){
   document.getElementById('notes').value=state.notes || '';
   renderWorkoutDetail(document.getElementById('todayWorkoutDetail'),cur);
   renderTasks(document.getElementById('taskList'),cur);
+  renderProjectSuggestion(cur);
   renderWeek(); renderStats(); renderWorkoutLibrary();
 }
 function renderWeek(){
@@ -562,13 +621,13 @@ function renderStats(){
   document.getElementById('statStreak').textContent=stats.streak;
   const cur=getCurrentDay(); const week=weekForDay(cur); const start=(week-1)*7+1; const end=Math.min(start+6,TOTAL_DAYS);
   const targets=[
-    ['Strength anchors', ['Strength A','Strength B'].filter(type=>{ for(let d=start;d<=end;d++) if(scheduleForDay(d).type===type && dayMinimumDone(d)) return true; return false; }).length, 2],
-    ['Main run', (()=>{ for(let d=start;d<=end;d++) if(scheduleForDay(d).type==='Run' && dayMinimumDone(d)) return 1; return 0; })(), 1],
-    ['Light days', (()=>{ let c=0; for(let d=start;d<=end;d++) if(['Light + VLAN','Flexible','Reset'].includes(scheduleForDay(d).type)&&dayMinimumDone(d)) c++; return Math.min(c,2); })(), 2],
-    ['Pull-up practice', (()=>{ let c=0; for(let d=start;d<=end;d++) if(isChecked(d,'pullup')) c++; return Math.min(c,3); })(), 3],
-    ['VLAN blocks', (()=>{ let c=0; for(let d=start;d<=end;d++) if(isChecked(d,'project')) c++; return Math.min(c,2); })(), 2],
+    ['Workout days', (()=>{ let c=0; for(let d=start;d<=end;d++) if(scheduleForDay(d).type.startsWith('Workout') && dayMinimumDone(d)) c++; return Math.min(c,3); })(), 3],
+    ['Run days', (()=>{ let c=0; for(let d=start;d<=end;d++) if(scheduleForDay(d).type==='Run' && dayMinimumDone(d)) c++; return Math.min(c,2); })(), 2],
+    ['Flexible/light days', (()=>{ let c=0; for(let d=start;d<=end;d++) if(scheduleForDay(d).type==='Flexible/Light' && dayMinimumDone(d)) c++; return Math.min(c,2); })(), 2],
+    ['Water ticks', (()=>{ let c=0; for(let d=start;d<=end;d++) if(isChecked(d,'water')) c++; return Math.min(c,5); })(), 5],
+    ['Light meals', (()=>{ let c=0; for(let d=start;d<=end;d++) if(isChecked(d,'lightMeal')) c++; return Math.min(c,4); })(), 4],
     ['Cheaper/better lunches', (()=>{ let c=0; for(let d=start;d<=end;d++) if(isChecked(d,'lunch')) c++; return Math.min(c,3); })(), 3],
-    ['Protected sleep', (()=>{ let c=0; for(let d=start;d<=end;d++) if(isChecked(d,'sleep')) c++; return Math.min(c,2); })(), 2],
+    ['Dinners handled', (()=>{ let c=0; for(let d=start;d<=end;d++) if(isChecked(d,'dinner')) c++; return Math.min(c,5); })(), 5],
   ];
   const box=document.getElementById('weeklyTargets'); box.innerHTML='';
   targets.forEach(([label,val,max])=>{
@@ -602,7 +661,7 @@ function openWorkoutEditor(opts){
   else if(opts.mode==='custom') w=state.customWorkouts[opts.key];
   else if(opts.mode==='new') w={title:'Custom Workout', category:'Custom', goal:'', detail:'', green:[], amber:[], red:[], notes:''};
   else w=workoutTemplate(opts.key);
-  document.getElementById('editorTitle').textContent=opts.mode==='day'?`Edit Day ${opts.day} Workout`:(opts.mode==='new'?'Create Custom Workout':'Edit Workout Template');
+  document.getElementById('editorTitle').textContent=opts.mode==='day'?`Edit Day ${opts.day} Workout`:(opts.mode==='new'?'Create Custom Workout':'Edit Exercise Template');
   document.getElementById('editName').value=w.title||'';
   document.getElementById('editGoal').value=w.goal||'';
   document.getElementById('editDetail').value=w.detail||'';
